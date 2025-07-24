@@ -2,6 +2,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Login from "./screens/Login";
 import SignUp from "./screens/SignUp";
@@ -14,18 +15,20 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="SignUp" component={SignUp} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="SellerDashboard" component={SellerDashboard} />
-        <Stack.Screen name="CustomersList" component={CustomersScreen} />
-        <Stack.Screen name="DeliveryHistory" component={DeliveriesScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Login"
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="SignUp" component={SignUp} />
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="SellerDashboard" component={SellerDashboard} />
+          <Stack.Screen name="CustomersList" component={CustomersScreen} />
+          <Stack.Screen name="DeliveryHistory" component={DeliveriesScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
