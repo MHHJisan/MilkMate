@@ -11,6 +11,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import {
   collection,
   addDoc,
@@ -24,7 +25,7 @@ import { db } from "../../lib/firebaseConfig";
 export default function CustomersScreen({ navigation }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [dailyQty, setDailyQty] = useState("");
+  const [dailyQty, setDailyQty] = useState("1"); // default 1 L
   const [rate, setRate] = useState("");
   const [customers, setCustomers] = useState([]);
 
@@ -46,14 +47,16 @@ export default function CustomersScreen({ navigation }) {
       await addDoc(collection(db, "customers"), {
         name,
         phone,
-        dailyQty: Number(dailyQty),
-        ratePerLtr: Number(rate),
+        // parseFloat handles "0.5" correctly
+        dailyQty: parseFloat(dailyQty),
+        ratePerLtr: parseFloat(rate),
         paymentCycle: "WEEKLY",
         createdAt: serverTimestamp(),
       });
+      // reset fields
       setName("");
       setPhone("");
-      setDailyQty("");
+      setDailyQty("1");
       setRate("");
       loadCustomers();
     } catch (e) {
@@ -87,20 +90,28 @@ export default function CustomersScreen({ navigation }) {
           style={styles.input}
           keyboardType="phone-pad"
         />
+
+        <Text style={styles.label}>Daily Quantity (L):</Text>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={dailyQty}
+            onValueChange={setDailyQty}
+            style={styles.picker}
+          >
+            <Picker.Item label="0.5 L" value="0.5" />
+            <Picker.Item label="1 L" value="1" />
+            <Picker.Item label="2 L" value="2" />
+          </Picker>
+        </View>
+
         <TextInput
-          placeholder="Daily Qty"
-          value={dailyQty}
-          onChangeText={setDailyQty}
-          style={styles.input}
-          keyboardType="numeric"
-        />
-        <TextInput
-          placeholder="Rate/Ltr"
+          placeholder="Rate per Litre"
           value={rate}
           onChangeText={setRate}
           style={styles.input}
-          keyboardType="numeric"
+          keyboardType="decimal-pad"
         />
+
         <Button title="Add Customer" onPress={handleAdd} />
       </View>
 
@@ -111,7 +122,7 @@ export default function CustomersScreen({ navigation }) {
           <View style={styles.item}>
             <Text style={styles.name}>{item.name}</Text>
             <Text>
-              {item.phone} • {item.dailyQty}L @ {item.ratePerLtr}/L
+              {item.phone} • {item.dailyQty} L @ {item.ratePerLtr}/L
             </Text>
           </View>
         )}
@@ -149,6 +160,21 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 8,
     marginBottom: 8,
+  },
+  label: {
+    marginTop: 8,
+    marginBottom: 4,
+    fontWeight: "600",
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 6,
+    marginBottom: 12,
+  },
+  picker: {
+    height: 50,
+    width: "100%",
   },
   item: {
     padding: 12,
